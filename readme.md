@@ -1,211 +1,212 @@
-# Aplicación de Gestión de Tareas - Backend
+# Task Management Application - Backend
 
-Este proyecto es el backend de una aplicación de gestión de tareas que permite a los usuarios registrarse, iniciar sesión y gestionar tareas de forma organizada. Desarrollado en Node.js, Express.js, TypeScript, TypeORM , Jest y SQLite, este backend está diseñado para ser modular, escalable y fácil de mantener, siguiendo los principios de SOLID y código limpio.
+This project is the backend for a task management application that allows users to register, log in, and manage tasks in an organized way. Built with Node.js, Express.js, TypeScript, TypeORM, Jest, and SQLite, this backend is designed to be modular, scalable, and easy to maintain, following SOLID principles and clean code practices.
 
-## Características
+## Features
 
-- **Autenticación y Autorización**: Autenticación segura con JWT y almacenamiento de contraseñas con hash.
-- **Gestión de Tareas**: CRUD completo para tareas, con opciones de filtrado y ordenación.
-- **Filtrado Avanzado**: Búsqueda eficiente de tareas por etiquetas, diseñado para grandes volúmenes de datos.
-- **Eficiencia y Rendimiento**: Optimización para consultas de alto rendimiento.
-- **Código Modular y Escalable**: Arquitectura siguiendo principios de SOLID y modularidad.
-- **Pruebas Unitarias**: Cobertura de funciones críticas con Jest.
-- **Validación de Datos DTOs**: Uso de **class-validator** y DTOs para asegurar la integridad de datos en el backend.
+- **Authentication and Authorization**: Secure authentication with JWT and hashed password storage.
+- **Task Management**: Full CRUD operations for tasks, with filtering and sorting options.
+- **Advanced Filtering**: Efficient task search by tags, designed for handling large volumes of data.
+- **Efficiency and Performance**: Optimized for high-performance queries.
+- **Modular and Scalable Code**: Architecture based on SOLID principles and modularity.
+- **Unit Testing**: Coverage for critical functions with Jest.
+- **DTO Data Validation**: Uses **class-validator** and DTOs to ensure data integrity on the backend.
 
-## Tecnologías Utilizadas
+## Technologies Used
 
-- **Node.js** y **Express.js**: Creación del backend y API RESTful.
-- **TypeORM**: ORM para manejar la base de datos, compatible con varios motores (SQLite, PostgreSQL, MySQL).
-- **SQLite**: Base de datos relacional en desarrollo. Adaptable a otros motores.
-- **TypeScript**: Tipado estático para un código más robusto y legible.
-- **class-validator** y **class-transformer**: Validación y transformación de DTOs.
-- **bcrypt**: Para encriptar contraseñas de forma segura.
-- **JSON Web Tokens (JWT)**: Para autenticación y control de acceso.
-- **Jest**: Para realizar pruebas unitarias.
+- **Node.js** and **Express.js**: Backend development and RESTful API creation.
+- **TypeORM**: ORM to manage the database, compatible with multiple engines (SQLite, PostgreSQL, MySQL).
+- **SQLite**: Relational database used in development. Easily adaptable to other engines.
+- **TypeScript**: Strong typing for more robust and readable code.
+- **class-validator** and **class-transformer**: Validation and transformation of DTOs.
+- **bcrypt**: Secure password encryption.
+- **JSON Web Tokens (JWT)**: For authentication and access control.
+- **Jest**: For unit testing.
 
-## Estructura del Proyecto
+## Project Structure
 
 ```plaintext
-
 ├──  node_modules
 ├──  src
-│    ├── modules                      # Directorio principal que contiene los módulos clave de la aplicación.
-│    │   ├── auth                     # Módulo de autenticación y autorización.
-│    │   │   ├── dtos                 # Contiene los objetos de transferencia de datos (DTOs) para la autenticación.
-│    │   │   │   ├── login.dto.ts     # DTO para validar los datos de entrada de inicio de sesión.
-│    │   │   │   └── register.dto.ts  # DTO para validar los datos de entrada de registro de usuario.
-│    │   │   ├── auth.routes.ts       # Define las rutas relacionadas con la autenticación (registro e inicio de sesión).
-│    │   │   ├── auth.controller.ts   # Controlador que maneja las solicitudes HTTP para la autenticación.
-│    │   │   ├── auth.service.ts      # Contiene la lógica de negocio de autenticación (registro, inicio de sesión).
-│    │   │   ├── auth.repository.ts   # Gestiona las interacciones de la autenticación con la base de datos.
-│    │   │   └── auth.entity.ts       # Entidad de usuario, define la estructura de datos para los usuarios.
-│    │   ├── tasks                    # Módulo para la gestión de tareas de los usuarios.
-│    │   │   ├── dtos                 # Contiene los DTOs para validar los datos de entrada de las tareas.
-│    │   │   │   └── task.dto.ts      # DTO para la creación y actualización de tareas.
-│    │   │   ├── tasks.routes.ts      # Define las rutas para las operaciones de tareas (CRUD).
-│    │   │   ├── tasks.controller.ts  # Controlador que maneja las solicitudes HTTP para las tareas.
-│    │   │   ├── tasks.service.ts     # Lógica de negocio para la gestión de tareas (creación, lectura, actualización, eliminación).
-│    │   │   ├── tasks.repository.ts  # Interactúa con la base de datos para el manejo de las tareas.
-│    │   │   └── tasks.entity.ts      # Entidad de tarea, define la estructura de datos para una tarea.
-│    │   ├── tags                     # Módulo para la gestión de etiquetas asociadas a las tareas.
-│    │   │   ├── dtos                 # Contiene los DTOs para validar los datos de entrada de las etiquetas.
-│    │   │   │   └── tag.dto.ts       # DTO para la creación y actualización de etiquetas.
-│    │   │   ├── tags.routes.ts       # Define las rutas para las operaciones de etiquetas (CRUD).
-│    │   │   ├── tags.controller.ts   # Controlador que maneja las solicitudes HTTP para las etiquetas.
-│    │   │   ├── tags.service.ts      # Lógica de negocio para la gestión de etiquetas.
-│    │   │   ├── tags.repository.ts   # Interactúa con la base de datos para el manejo de etiquetas.
-│    │   │   └── tags.entity.ts       # Entidad de etiqueta, define la estructura de datos para una etiqueta.
-│    ├── config                       # Carpeta para la configuración de la aplicación.
-│    │   └── database.ts              # Configuración de TypeORM para la conexión a la base de datos.
-│    │   └── envs.ts                  # Configuración de variables de entorno.
-│    ├── middleware                   # Middlewares personalizados para la aplicación.
-│    │   ├── auth.middleware.ts       # Middleware para proteger rutas, asegurando que solo usuarios autenticados accedan.
-│    │   └── validation.middleware.ts # Middleware para validar los datos de entrada usando los DTOs.
-│    ├── routes                       # Rutas.
-│    │   └── index.ts                 # Rutas principales de la aplicación.
-│    ├── tests                        # Carpeta que contiene las pruebas unitarias y de integración de la aplicación.
-│    │   ├── auth.test.ts             # Pruebas de autenticación, incluyendo registro, inicio de sesión y rutas protegidas.
-│    │   ├── tasks.test.ts            # Pruebas CRUD de tareas, incluyendo validación de datos de entrada y operaciones de tareas.
-│    │   └── security.test.ts         # Pruebas de seguridad, incluyendo validación de tokens.
-│    ├── utils                        # Funciones utilitarias y plantillas de respuesta.
-│    │   ├── responseTemplates.ts     # Plantillas de respuesta para estandarizar respuestas HTTP (éxito y error).
-│    │   └── setupTest.ts             # Configuración de la base de datos para las pruebas.
-│    ├── app.ts                       # Configuración general de la aplicación (middlewares, rutas, etc.).
-│    └── server.ts                    # Archivo principal para iniciar el servidor y escuchar en el puerto configurado.
-├── .env                              # Archivo de variables de entorno (configuración sensible como JWT_SECRET y DATABASE_URL).
-├── .gitignore                        # Archivo de ignorados.
-├── database.sqlite                   # Base de datos de prueba.
-├── eslint.config.json                # Configuración de ESLint.
-├── jest.config.json                  # Configuración de Jest.
-├── package.json                      # Archivo de dependencias y scripts del proyecto.
-├── tsconfig.json                     # Configuración de TypeScript.
-└── readme.md                         # Este archivo.
+│    ├── modules                      # Main directory containing the application's key modules.
+│    │   ├── auth                     # Authentication and authorization module.
+│    │   │   ├── dtos                 # Contains the Data Transfer Objects (DTOs) for authentication.
+│    │   │   │   ├── login.dto.ts     # DTO for validating login input data.
+│    │   │   │   └── register.dto.ts  # DTO for validating user registration input data.
+│    │   │   ├── auth.routes.ts       # Defines routes related to authentication (registration and login).
+│    │   │   ├── auth.controller.ts   # Controller that handles HTTP requests for authentication.
+│    │   │   ├── auth.service.ts      # Contains business logic for authentication (registration, login).
+│    │   │   ├── auth.repository.ts   # Manages database interactions for authentication.
+│    │   │   └── auth.entity.ts       # User entity, defines the data structure for users.
+│    │   ├── tasks                    # Module for managing user tasks.
+│    │   │   ├── dtos                 # Contains the DTOs for validating task input data.
+│    │   │   │   └── task.dto.ts      # DTO for task creation and update.
+│    │   │   ├── tasks.routes.ts      # Defines routes for task operations (CRUD).
+│    │   │   ├── tasks.controller.ts  # Controller that handles HTTP requests for tasks.
+│    │   │   ├── tasks.service.ts     # Business logic for task management (creation, reading, updating, deleting).
+│    │   │   ├── tasks.repository.ts  # Interacts with the database to manage tasks.
+│    │   │   └── tasks.entity.ts      # Task entity, defines the data structure for a task.
+│    │   ├── tags                     # Module for managing tags associated with tasks.
+│    │   │   ├── dtos                 # Contains the DTOs for validating tag input data.
+│    │   │   │   └── tag.dto.ts       # DTO for creating and updating tags.
+│    │   │   ├── tags.routes.ts       # Defines routes for tag operations (CRUD).
+│    │   │   ├── tags.controller.ts   # Controller that handles HTTP requests for tags.
+│    │   │   ├── tags.service.ts      # Business logic for tag management.
+│    │   │   ├── tags.repository.ts   # Interacts with the database to manage tags.
+│    │   │   └── tags.entity.ts       # Tag entity, defines the data structure for a tag.
+│    ├── config                       # Application configuration folder.
+│    │   └── database.ts              # TypeORM configuration for database connection.
+│    │   └── envs.ts                  # Environment variable configuration.
+│    ├── middleware                   # Custom middlewares for the application.
+│    │   ├── auth.middleware.ts       # Middleware to protect routes, ensuring only authenticated users access them.
+│    │   └── validation.middleware.ts # Middleware to validate input data using DTOs.
+│    ├── routes                       # Routes.
+│    │   └── index.ts                 # Main application routes.
+│    ├── tests                        # Folder containing unit and integration tests.
+│    │   ├── auth.test.ts             # Authentication tests, including registration, login, and protected routes.
+│    │   ├── tasks.test.ts            # Task CRUD tests, including input data validation and task operations.
+│    │   └── security.test.ts         # Security tests, including token validation.
+│    ├── utils                        # Utility functions and response templates.
+│    │   ├── responseTemplates.ts     # Response templates to standardize HTTP responses (success and error).
+│    │   └── setupTest.ts             # Database setup for tests.
+│    ├── app.ts                       # General application configuration (middlewares, routes, etc.).
+│    └── server.ts                    # Main file to start the server and listen on the configured port.
+├── .env                              # Environment variables file (sensitive config like JWT_SECRET and DATABASE_URL).
+├── .gitignore                        # Git ignored files.
+├── database.sqlite                   # Test database.
+├── eslint.config.json                # ESLint configuration.
+├── jest.config.json                  # Jest configuration.
+├── package.json                      # Project dependencies and scripts file.
+├── tsconfig.json                     # TypeScript configuration.
+├── readme.es.md                      # readme in spanish.
+└── readme.md                         # This file.
               
 ```
 
-## Configuración e Instalación
+## Setup and Installation
 
-### 1. Clonar el Repositorio
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/tu-usuario/nombre-del-repositorio.git
-cd nombre-del-repositorio
+git clone https://github.com/your-username/repository-name.git
+cd repository-name
 ```
 
-### 2. Instalar Dependencias
+### 2. Install Dependencies
 
-Asegúrate de tener Node.js y npm instalados. Luego, ejecuta:
+Ensure you have Node.js and npm installed. Then, run:
 
 ```bash
 npm install
 ```
 
-### 3. Configuración del Entorno
+### 3. Environment Configuration
 
-Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
+Create a `.env` file in the project root with the following variables:
 
 ```plaintext
-# Configuración del puerto del servidor
+# Server port configuration
 PORT=3000
 
-# Configuración de JWT
+# JWT Configuration
 JWT_SECRET=supersecret
 JWT_EXPIRES_IN=1h
 
-# Configuración de la Base de Datos (SQLite en desarrollo)
+# Database Configuration (SQLite in development)
 DATABASE_TYPE=sqlite
 DATABASE_NAME=./database.sqlite   
 ```
 
-### 4. Configuración de la Base de Datos con TypeORM
+### 4. Database Configuration with TypeORM
 
-Configura TypeORM en `src/config/database.ts` para conectarse a la base de datos indicada en `.env`.
+Set up TypeORM in `src/config/database.ts` to connect to the database specified in `.env`.
 
-Para cambiar el motor de base de datos (por ejemplo, a PostgreSQL en producción), ajusta `DATABASE_TYPE` y otros valores en `.env` sin modificar el código principal.
+To change the database engine (e.g., to PostgreSQL in production), adjust `DATABASE_TYPE` and other values in `.env` without modifying the main code.
 
-### 5. Ejecutar Migraciones
+### 5. Run Migrations
 
-Ejecuta el siguiente comando para crear las tablas en la base de datos:
+Run the following command to create the tables in the database:
 
 ```bash
 npm run typeorm migration:run
 ```
 
-### 6. Iniciar el Servidor
+### 6. Start the Server
 
-Para iniciar el servidor en modo desarrollo:
+To start the server in development mode:
 
 ```bash
 npm run dev
 ```
 
-El servidor estará disponible en `http://localhost:3000`.
+The server should be available at `http://localhost:3000`.
 
-## Uso de la API
+## API Usage
 
 ### Endpoints
 
-Aquí tienes la tabla completada, incluyendo el **modelo de datos** donde se aplica.
+Here is the completed table with **data models** where applicable.
 
 ---
 
 #### Auth
 
-| Método | Endpoint         | Descripción                       | Modelo de datos                   |
-|--------|------------------|-----------------------------------|-----------------------------------|
-| POST   | `/api/register`  | Registrar un nuevo usuario        | `{email: string, password: string}`                 |
-| POST   | `/api/login`     | Iniciar sesión y obtener JWT      | `{email: string, password: string}`                 |
+| Method | Endpoint         | Description                       | Data Model                           |
+|--------|------------------|-----------------------------------|--------------------------------------|
+| POST   | `/api/register`  | Register a new user              | `{email: string, password: string}`  |
+| POST   | `/api/login`     | Log in and get a JWT             | `{email: string, password: string}`  |
 
 #### Tasks
 
-| Método | Endpoint                      | Descripción                          | Modelo de datos                                 |
-|--------|--------------------------------|--------------------------------------|-------------------------------------------------|
-| GET    | `/api/tasks`                  | Obtener todas las tareas             | -                                               |
-| GET    | `/api/tasks?tags=tag1&tags=tag2` | Filtrar tareas por etiquetas         | query: `{tags: string[]}`                       |
-| POST   | `/api/tasks`                  | Crear una nueva tarea                | `{title: string, description?: string, dueDate?: Date, status?: string, tags: number[]}` |
-| PUT    | `/api/tasks/:id`              | Actualizar una tarea existente       | `{title?: string, description?: string, dueDate?: Date, status?: string}`               |
-| DELETE | `/api/tasks/:id`              | Eliminar una tarea existente         | -                                               |
+| Method | Endpoint                      | Description                          | Data Model                                                              |
+|--------|--------------------------------|--------------------------------------|-------------------------------------------------------------------------|
+| GET    | `/api/tasks`                  | Get all tasks                        | -                                                                       |
+| GET    | `/api/tasks?tags=tag1&tags=tag2` | Filter tasks by tags                 | query: `{tags: string[]}`                                               |
+| POST   | `/api/tasks`                  | Create a new task                    | `{title: string, description?: string, dueDate?: Date, status?: string, tags: number[]}` |
+| PUT    | `/api/tasks/:id`              | Update an existing task              | `{title?: string, description?: string, dueDate?: Date, status?: string}`               |
+| DELETE | `/api/tasks/:id`              | Delete an existing task              | -                                                                       |
 
 #### Tags
 
-| Método | Endpoint               | Descripción                           | Modelo de datos                                 |
-|--------|-------------------------|---------------------------------------|-------------------------------------------------|
-| GET    | `/api/tags/all`        | Obtener todos los tags                | -                                               |
-| GET    | `/api/tags`            | Obtener todos los tags de un usuario  | -                                               |
-| POST   | `/api/tags`            | Crear un nuevo tag                    | `{name: string, color?: string}`                |
-| PUT    | `/api/tags/:id`        | Actualizar un tag existente           | `{name?: string, color?: string}`               |
-| DELETE | `/api/tags/:id`        | Eliminar un tag existente             | -                                               |
+| Method | Endpoint               | Description                           | Data Model                                       |
+|--------|-------------------------|---------------------------------------|--------------------------------------------------|
+| GET    | `/api/tags/all`        | Get all tags                          | -                                                |
+| GET    | `/api/tags`            | Get all tags for a user               | -                                                |
+| POST   | `/api/tags`            | Create a new tag                      | `{name: string, color?: string}`                 |
+| PUT    | `/api/tags/:id`        | Update an existing tag                | `{name?: string, color?: string}`                |
+| DELETE | `/api/tags/:id`        |
+
+ Delete an existing tag                | -                                                |
 
 ---
 
-### Explicación de Modelos de Datos:
+### Data Model Explanation:
 
-- **Tasks (POST y PUT)**:
-  - `title`: Obligatorio en la creación; representa el título de la tarea.
-  - `description`: Opcional, una breve descripción de la tarea.
-  - `dueDate`: Opcional, la fecha de vencimiento de la tarea.
-  - `status`: Opcional, puede ser `pending`, `in_progress`, o `completed`.
-  - `tags`: Array de IDs de etiquetas asociadas a la tarea.
+- **Tasks (POST and PUT)**:
+  - `title`: Required during creation; represents the task title.
+  - `description`: Optional, a brief task description.
+  - `dueDate`: Optional, the task due date.
+  - `status`: Optional, can be `pending`, `in_progress`, or `completed`.
+  - `tags`: Array of tag IDs associated with the task.
 
-- **Tags (POST y PUT)**:
-  - `name`: Obligatorio en la creación, representa el nombre del tag.
-  - `color`: Opcional, representa un color asociado al tag.
+- **Tags (POST and PUT)**:
+  - `name`: Required during creation, represents the tag name.
+  - `color`: Optional, represents a color associated with the tag.
 
-Cada endpoint está diseñado para responder a las necesidades específicas de la API, asegurando que los datos relevantes se envíen y reciban de forma clara y estructurada.
+Each endpoint is designed to address the specific needs of the API, ensuring that relevant data is sent and received in a clear and structured manner.
 
-## Pruebas
+## Testing
 
-### Configuración de Jest
+### Jest Configuration
 
-Jest está configurado para pruebas unitarias en el backend. Ejecuta las pruebas con:
+Jest is configured for unit testing on the backend. Run the tests with:
 
 ```bash
 npm test
 ```
 
-### Pruebas Realizadas
+### Performed Tests
 
-- **Autenticación**: Pruebas de registro e inicio de sesión, asegurando el hash seguro de contraseñas y generación de tokens JWT.
-- **Gestión de Tareas**: Pruebas para la creación, edición, eliminación y filtrado de tareas.
-- **Filtrado y Consultas**: Pruebas de rendimiento para el filtrado de tareas, evaluando eficiencia y precisión.
-
+- **Authentication**: Registration and login tests, ensuring secure password hashing and JWT generation.
+- **Task Management**: Tests for task creation, editing, deletion, and filtering.
+- **Filtering and Queries**: Performance tests for task filtering, evaluating efficiency and accuracy.

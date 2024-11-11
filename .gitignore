@@ -1,0 +1,45 @@
+# Node modules
+node_modules/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Entornos y configuración
+.env                 # Archivos de configuración de entorno (contienen claves y datos sensibles)
+ormconfig.json       # Archivo de configuración de TypeORM (si contiene credenciales)
+
+# Directorios de compilación y temporales
+dist/                # Código compilado por TypeScript
+build/               # Otro nombre común para el directorio de compilación
+coverage/            # Directorio de reportes de cobertura de pruebas (por Jest u otras herramientas)
+
+# Configuración de IDEs y editores
+.vscode/             # Configuración de Visual Studio Code
+.idea/               # Configuración de WebStorm o PhpStorm
+*.sublime-workspace  # Configuración de Sublime Text
+
+# Configuración del sistema operativo
+.DS_Store            # Archivo específico de macOS
+Thumbs.db            # Archivo específico de Windows
+
+# Otros archivos de caché
+*.tsbuildinfo        # Archivo de caché de compilación de TypeScript
+.cache               # Caché de algunas herramientas de construcción
+
+# Base de datos local
+*.sqlite             # Archivos de bases de datos SQLite
+database.sqlite      # Archivo de base de datos SQLite
+
+# Claves y certificados
+*.pem                # Certificados de seguridad (si se usa en el desarrollo local)
+*.key                # Claves privadas (si se usa en el desarrollo local)
+
+# Archivos de salida
+*.zip                # Archivos comprimidos de la aplicación
+
+# Archivos de configuración específicos de dependencias
+# Por ejemplo, si utilizas un archivo de configuración personalizado de TypeORM (ej. `ormconfig.js`), agrégalo aquí
