@@ -20,8 +20,20 @@ class TasksController {
     try {
       const { id: userId } = (req as any).user;
 
-      const tasks = await TasksService.findTasksByUser(userId);
-      res.status(200).json(successResponse('Get user tasks successful', tasks, 200));
+      // Get the page and limit parameters from the request query
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      // Call the findTasksByUserPaginated method with the user ID and pagination parameters
+      const { tasks, totalTasks } = await TasksService.findTasksByUserPaginated(userId, page, limit);
+
+      // Return the paginated tasks and pagination information
+      res.status(200).json(successResponse('Get user tasks successful', {
+        tasks,
+        currentPage: page,
+        totalPages: Math.ceil(totalTasks / limit),
+        totalTasks
+      }, 200));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       res.status(500).json(errorResponse(errorMessage, null, 500));
@@ -92,7 +104,7 @@ class TasksController {
       res.status(400).json(errorResponse(errorMessage, null, 400));
     }
   }
-  
+
   // Delete a task
   async delete(req: Request, res: Response): Promise<void> {
     try {

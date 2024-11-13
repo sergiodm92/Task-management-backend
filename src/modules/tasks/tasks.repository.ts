@@ -22,6 +22,15 @@ class TasksRepository {
     return this.repo.find({ where: { user: { id: userId } }, relations: ['tags'] });
   }
 
+  async findAndCountByUserId(userId: number, offset: number, limit: number): Promise<[Task[], number]> {
+    return this.repo.findAndCount({
+      where: { user: { id: userId } },
+      relations: ['tags'],
+      skip: offset,
+      take: limit
+    });
+  }
+
   findByTags(tags: number[], userId: number) {
     return this.repo.find({ where: { tags: { id: In(tags) }, user: { id: userId } } });
   }
