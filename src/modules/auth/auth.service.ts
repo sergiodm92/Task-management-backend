@@ -34,7 +34,16 @@ class AuthService {
       expiresIn: envs.JWT_EXPIRES_IN,
     });
 
-    return { token };
+    const userResponse = {
+      id: user.id,
+      email: user.email,
+    };
+
+    return { token, user:userResponse };
+  }
+
+  async getUser(id: number) {
+    return await AuthRepository.findById(id);
   }
 }
 

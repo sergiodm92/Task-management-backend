@@ -84,7 +84,7 @@ class TasksController {
   // Update a task
   async update(req: Request, res: Response): Promise<void> {
     try {
-      const task = await TasksService.update(Number(req.params.id), req.body);
+      const task = await TasksService.update(+req.params.id, req.body);
       res.status(200).json(successResponse('Update task successfully', task, 200));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -95,7 +95,7 @@ class TasksController {
   // Delete a task
   async delete(req: Request, res: Response): Promise<void> {
     try {
-      await TasksService.delete(Number(req.params.id));
+      await TasksService.delete(+req.params.id);
       res.status(204).json(successResponse('Task deleted successfully', null, 204));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

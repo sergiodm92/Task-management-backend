@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import User from '@modules/auth/auth.entity';
 import { Tag } from '@modules/tags/tags.entity';
 
@@ -16,8 +25,8 @@ export class Task {
   @Column({ type: 'date', nullable: true })
   dueDate: Date;
 
-  @Column({ default: 'pending' })
-  status: 'pending' | 'in_progress' | 'completed';
+  @Column({ type: 'text', default: 'pending' })
+  status: string;
 
   @ManyToOne(() => User, (user) => user.tasks, { onDelete: 'CASCADE' })
   user: User;
@@ -25,5 +34,10 @@ export class Task {
   @ManyToMany(() => Tag, (tag) => tag.tasks, { nullable: true })
   @JoinTable()
   tags?: Tag[];
-}
 
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}

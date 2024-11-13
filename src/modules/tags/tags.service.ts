@@ -30,11 +30,11 @@ class TagsService {
     const existTag = await TagsRepository.findByName(tagData.name);
     if (existTag) throw new Error('Tag already exists');
 
-    const tagWithUser = { ...tagDataWithoutRelations, user };
-    return TagsRepository.create(tagWithUser);
+    return TagsRepository.create(tagDataWithoutRelations);
+    
   }
 
-// Update a tag
+  // Update a tag
   async update(id: number, tagData: Partial<Tag>): Promise<Tag | null> {
     const tag = await TagsRepository.findById(id);
     if (!tag) throw new Error('Tag not found');
@@ -45,7 +45,7 @@ class TagsService {
 
   // Delete a tag
   delete(id: number): Promise<void> {
-    return TagsRepository.delete(id).then(() => { });
+    return TagsRepository.delete(id).then(() => {});
   }
 }
 

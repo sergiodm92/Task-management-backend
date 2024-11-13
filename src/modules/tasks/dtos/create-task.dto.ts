@@ -7,17 +7,17 @@ export class CreateTaskDTO {
 
   @IsString()
   @IsOptional()
-  description?: string;
+  description: string;
 
   @IsString()
   @IsOptional()
   @IsDateString()
-  dueDate?: string;
+  dueDate: string;
 
   @IsString()
   @IsOptional()
   @IsIn(['pending', 'in_progress', 'completed'], { message: 'The state must be either pending, in_progress or completed' })
-  status?: 'pending' | 'in_progress' | 'completed';
+  status: 'pending' | 'in_progress' | 'completed';
 
   @IsArray()
   @IsOptional()

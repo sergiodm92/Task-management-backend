@@ -1,6 +1,7 @@
 import { AppDataSource } from '@config/database';
 import { Repository, In } from 'typeorm';
 import { Task } from './tasks.entity';
+import { Tag } from '@modules/tags/tags.entity';
 
 class TasksRepository {
   private repo: Repository<Task>;
@@ -30,8 +31,18 @@ class TasksRepository {
     return this.repo.save(task);
   }
 
-  update(id: number, taskData: Partial<Task>) {
-    return this.repo.update(id, taskData);
+  async update(id: number, taskData: Partial<Task>) {
+    const task = await this.repo.findOne({ where: { id }, relations: ['tags'] });
+    if (!task) throw new Error('Task not found');
+
+    Object.assign(task, taskData);
+
+    if (taskData.tags) {
+      const tagsRepository = AppDataSource.getRepository(Tag);
+      const updatedTags = await tagsRepository.findBy({ id: In(taskData.tags.map(tag => tag)) });
+      task.tags = updatedTags;
+    }
+    return this.repo.save(task);
   }
 
   delete(id: number) {

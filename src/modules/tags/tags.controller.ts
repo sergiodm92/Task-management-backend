@@ -67,7 +67,7 @@ class TagsController {
     // Update a tag
     async update(req: Request, res: Response): Promise<void> {
         try {
-            const tag = await TagsService.update(Number(req.params.id), req.body);
+            const tag = await TagsService.update(+req.params.id, req.body);
             res.status(200).json(successResponse('Update tag successfully', tag, 200));
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -77,7 +77,7 @@ class TagsController {
     // Delete a tag
     async delete(req: Request, res: Response): Promise<void> {
         try {
-            await TagsService.delete(Number(req.params.id));
+            await TagsService.delete(+req.params.id);
             res.status(204).json(successResponse('Tag deleted successfully', null, 204));
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';

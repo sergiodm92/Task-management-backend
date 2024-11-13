@@ -35,7 +35,7 @@ class TasksService {
     const tags = tagIds.length > 0 ? await tagsRepository.findByIds(tagIds) : [];
     if (tags.length !== tagIds.length) throw new Error('One or more tags not found');
 
-    const taskWithRelations = { ...taskDataWithoutRelations, user, tags };
+    const taskWithRelations = { ...taskDataWithoutRelations, tags };
     return TasksRepository.create(taskWithRelations);
   }
 

@@ -35,6 +35,21 @@ class AuthController {
       res.status(401).json(errorResponse(errorMessage, null, 401));
     }
   };
+
+  getUser: RequestHandler = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id: userId } = (req as any).user;
+      const user = await AuthService.getUser(+userId);
+
+      // Response with status code 200
+      res.status(200).json(successResponse('User found', user, 200));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      // Response with status code 404
+      res.status(404).json(errorResponse(errorMessage, null, 404));
+    }
+  };
 }
 
 export default new AuthController();

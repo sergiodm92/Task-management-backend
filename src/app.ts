@@ -12,9 +12,9 @@ const app: Application = express();
 
 app.use(helmet());
 // CORS configuration
-app.use(cors({ origin: ['*'] }));
+app.use(cors());
 // Limit requests to 100 per IP in 15 minutes.
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+// app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 // Globals middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

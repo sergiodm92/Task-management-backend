@@ -8,5 +8,5 @@ export class CreateTagDTO {
   @IsString()
   @IsOptional()
   @Length(1, 15, { message: 'The color must be between 1 and 15 characters long' })
-  color?: string;
+  color: string;
 }
