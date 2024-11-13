@@ -44,7 +44,8 @@ class TasksController {
         res.status(400).json(errorResponse('Tags query parameter must be an array', null, 400));
         return;
       }
-      const tasks = await TasksService.findTasksByTags(tags as string[], userId);
+      const tagsNumber = tags.map(tag => Number(tag));
+      const tasks = await TasksService.findTasksByTags(tagsNumber, userId);
       res.status(200).json(successResponse('Get tasks by tags successful', tasks, 200));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

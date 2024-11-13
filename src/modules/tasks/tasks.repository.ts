@@ -22,8 +22,8 @@ class TasksRepository {
     return this.repo.find({ where: { user: { id: userId } }, relations: ['tags'] });
   }
 
-  findByTags(tags: string[], userId: number) {
-    return this.repo.find({ where: { tags: { name: In(tags) }, user: { id: userId } } });
+  findByTags(tags: number[], userId: number) {
+    return this.repo.find({ where: { tags: { id: In(tags) }, user: { id: userId } } });
   }
 
   create(taskData: Partial<Task>) {

@@ -2,6 +2,8 @@ import TagsRepository from './tags.repository';
 import { Tag } from './tags.entity';
 import authRepository from '@modules/auth/auth.repository';
 import { CreateTagDTO } from './dtos';
+import tasksService from '@modules/tasks/tasks.service';
+import { TagHasAssociatedTasksError } from '@utils/TagHasAssociatedTaskError';
 
 class TagsService {
 
@@ -30,8 +32,9 @@ class TagsService {
     const existTag = await TagsRepository.findByName(tagData.name);
     if (existTag) throw new Error('Tag already exists');
 
-    return TagsRepository.create(tagDataWithoutRelations);
-    
+    const tagWithRelations = { ...tagDataWithoutRelations, user };
+    return TagsRepository.create(tagWithRelations);
+
   }
 
   // Update a tag
@@ -44,9 +47,17 @@ class TagsService {
   }
 
   // Delete a tag
-  delete(id: number): Promise<void> {
-    return TagsRepository.delete(id).then(() => {});
-  }
+  async delete(id: number, userId: number): Promise<void> {
+    console.log(id, userId);
+
+    const response = await tasksService.findTasksByTags([id], userId);
+    if (response.length > 0) {
+        // Lanza un error específico si la etiqueta tiene tareas asociadas
+        throw new TagHasAssociatedTasksError('The tag has associated tasks');
+    }
+
+    await TagsRepository.delete(id);
+}
 }
 
 export default new TagsService();

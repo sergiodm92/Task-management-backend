@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import TagsService from './tags.service';
 import { errorResponse, successResponse } from '@utils/responseTemplates';
+import { TagHasAssociatedTasksError } from '@utils/TagHasAssociatedTaskError';
 
 class TagsController {
     // Get all tags
@@ -77,11 +78,16 @@ class TagsController {
     // Delete a tag
     async delete(req: Request, res: Response): Promise<void> {
         try {
-            await TagsService.delete(+req.params.id);
+            const { id: userId } = (req as any).user;
+            await TagsService.delete(+req.params.id, userId);
             res.status(204).json(successResponse('Tag deleted successfully', null, 204));
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            res.status(500).json(errorResponse(errorMessage, null, 500));
+            if (error instanceof TagHasAssociatedTasksError) {
+                res.status(405).json(errorResponse(error.message, null, 405));
+            } else {
+                console.error(error);
+                res.status(500).json(errorResponse('An unexpected error occurred', null, 500));
+            }
         }
     }
 }

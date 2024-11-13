@@ -21,7 +21,7 @@ class TasksService {
   }
 
   // Find all tasks by tags
-  findTasksByTags(tags: string[], userId: number): Promise<Task[]> {
+  findTasksByTags(tags: number[], userId: number): Promise<Task[]> {
     return TasksRepository.findByTags(tags, userId);
   }
 
