@@ -160,8 +160,9 @@ Here is the completed table with **data models** where applicable.
 
 | Method | Endpoint                      | Description                          | Data Model                                                              |
 |--------|--------------------------------|--------------------------------------|-------------------------------------------------------------------------|
-| GET    | `/api/tasks`                  | Get all tasks                        | -                                                                       |
-| GET    | `/api/tasks?tags=tag1&tags=tag2` | Filter tasks by tags                 | query: `{tags: string[]}`                                               |
+| GET    | `/api/tasks/all`                  | Get all tasks                      | -                                                                       |
+| GET    | `/api/tasks`                  | Get all tasks by user                       | -                                                                       |
+| GET    | `/api/tasks?tags=tag1&tags=tag2&status=pending` | Filter tasks by tags and status  | query: `{tags: string[], status:string}`                                               |
 | POST   | `/api/tasks`                  | Create a new task                    | `{title: string, description?: string, dueDate?: Date, status?: string, tags: number[]}` |
 | PUT    | `/api/tasks/:id`              | Update an existing task              | `{title?: string, description?: string, dueDate?: Date, status?: string}`               |
 | DELETE | `/api/tasks/:id`              | Delete an existing task              | -                                                                       |
@@ -171,7 +172,7 @@ Here is the completed table with **data models** where applicable.
 | Method | Endpoint               | Description                           | Data Model                                       |
 |--------|-------------------------|---------------------------------------|--------------------------------------------------|
 | GET    | `/api/tags/all`        | Get all tags                          | -                                                |
-| GET    | `/api/tags`            | Get all tags for a user               | -                                                |
+| GET    | `/api/tags`            | Get all tags by user               | -                                                |
 | POST   | `/api/tags`            | Create a new tag                      | `{name: string, color?: string}`                 |
 | PUT    | `/api/tags/:id`        | Update an existing tag                | `{name?: string, color?: string}`                |
 | DELETE | `/api/tags/:id`        |
