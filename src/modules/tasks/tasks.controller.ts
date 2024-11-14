@@ -25,14 +25,15 @@ class TasksController {
       const limit = parseInt(req.query.limit as string) || 10;
 
       // Call the findTasksByUserPaginated method with the user ID and pagination parameters
-      const { tasks, totalTasks } = await TasksService.findTasksByUserPaginated(userId, page, limit);
+      const { tasks, totalTasks, taskCountsByState } = await TasksService.findTasksByUserPaginated(userId, page, limit);
 
       // Return the paginated tasks and pagination information
       res.status(200).json(successResponse('Get user tasks successful', {
         tasks,
         currentPage: page,
         totalPages: Math.ceil(totalTasks / limit),
-        totalTasks
+        totalTasks,
+        taskCountsByState
       }, 200));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

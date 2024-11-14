@@ -2,6 +2,7 @@ import { AppDataSource } from '@config/database';
 import { Repository, In } from 'typeorm';
 import { Task } from './tasks.entity';
 import { Tag } from '@modules/tags/tags.entity';
+import { TaskCountsByState } from './types';
 
 class TasksRepository {
   private repo: Repository<Task>;
@@ -22,14 +23,41 @@ class TasksRepository {
     return this.repo.find({ where: { user: { id: userId } }, relations: ['tags'] });
   }
 
-  async findAndCountByUserId(userId: number, offset: number, limit: number): Promise<[Task[], number]> {
-    return this.repo.findAndCount({
+  async findAndCountByUserId(
+    userId: number,
+    offset: number,
+    limit: number
+  ): Promise<{ tasks: Task[], totalTasks: number, taskCountsByState: TaskCountsByState }> {
+    
+    // Obtener tareas con paginación y total de tareas
+    const [tasks, totalTasks] = await this.repo.findAndCount({
       where: { user: { id: userId } },
       relations: ['tags'],
       skip: offset,
       take: limit,
       order: { createdAt: 'DESC' },
     });
+  
+    // Contar tareas por estado
+    const taskCounts = await this.repo.createQueryBuilder('task')
+      .select('task.status', 'status')
+      .addSelect('COUNT(task.id)', 'count')
+      .where('task.userId = :userId', { userId })
+      .groupBy('task.status')
+      .getRawMany();
+  
+    // Organizar los conteos en un objeto
+    const taskCountsByState: TaskCountsByState = {
+      in_progress: 0,
+      completed: 0,
+      pending: 0,
+    };
+  
+    taskCounts.forEach(({ status, count }) => {
+      taskCountsByState[status as keyof TaskCountsByState] = parseInt(count, 10);
+    });
+  
+    return { tasks, totalTasks, taskCountsByState };
   }
 
   findByTags(tags: number[], userId: number) {
@@ -43,26 +71,23 @@ class TasksRepository {
     offset: number,
     limit: number
   ): Promise<{ tasks: Task[], totalTasks: number }> {
-    // Crear el query builder para la tabla 'task'
+    // Create the query builder for the 'task' table  
     const queryBuilder = this.repo.createQueryBuilder('task')
       .leftJoinAndSelect('task.tags', 'tag')
       .where('task.userId = :userId', { userId });
   
-    // Condiciones para los filtros
+    
     if (tags.length > 0 && status) {
-      // Si hay tags y status
       queryBuilder
         .andWhere('tag.id IN (:...tags)', { tags })
         .andWhere('task.status = :status', { status });
     } else if (tags.length > 0) {
-      // Si solo hay tags
       queryBuilder.andWhere('tag.id IN (:...tags)', { tags });
     } else if (status) {
-      // Si solo hay status
       queryBuilder.andWhere('task.status = :status', { status });
     }
   
-    // Ejecutar el query con paginación y ordenar por fecha de creación
+    // Eject the query with pagination and sorting by creation date
     const [tasks, totalTasks] = await queryBuilder
       .skip(offset)
       .take(limit)

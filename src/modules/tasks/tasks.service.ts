@@ -2,16 +2,17 @@ import TasksRepository from './tasks.repository';
 import { Task } from './tasks.entity';
 import tagsRepository from '@modules/tags/tags.repository';
 import authRepository from '@modules/auth/auth.repository';
+import { PaginatedTasksResult } from './types';
 
 class TasksService {
 
   // Find all tasks
-  findAll(): Promise<Task[]> {
+  async findAll(): Promise<Task[]> {
     return TasksRepository.findAll();
   }
 
   // Find a task by id
-  findById(id: number): Promise<Task | null> {
+  async findById(id: number): Promise<Task | null> {
     return TasksRepository.findById(id);
   }
 
@@ -21,28 +22,36 @@ class TasksService {
     return tasks
   }
 
-  async findTasksByUserPaginated(userId: number, page: number, limit: number): Promise<{ tasks: Task[], totalTasks: number }> {
-    // Calcular el índice inicial
+  async findTasksByUserPaginated(
+    userId: number,
+    page: number,
+    limit: number
+  ): Promise<PaginatedTasksResult> {
+    // Calclate the initial index
     const offset = (page - 1) * limit;
 
-    // Obtener las tareas paginadas y el total de tareas
-    const [tasks, totalTasks] = await TasksRepository.findAndCountByUserId(userId, offset, limit);
+    // Get tasks paginated and total tasks
+    const { tasks, totalTasks, taskCountsByState } = await TasksRepository.findAndCountByUserId(
+      userId,
+      offset,
+      limit
+    );
 
-    // Ordenar las tareas por fecha de creación (descendente)
+    // Sort tasks by creation date (descending)
     tasks.sort((a: Task, b: Task) => b.createdAt.getTime() - a.createdAt.getTime());
 
-    return { tasks, totalTasks };
+    return { tasks, totalTasks, taskCountsByState };
   }
 
   // Find all tasks by tags
   async findTasksByTagsPaginated(tags: number[], status: string, userId: number, page: number, limit: number): Promise<{ tasks: Task[], totalTasks: number }> {
     const offset = (page - 1) * limit;
     return TasksRepository.findAndCountByTagsAndStatus(tags, status, userId, offset, limit);
-}
+  }
 
-findTasksByTags(tags: number[], userId: number): Promise<Task[]> {
-  return TasksRepository.findByTags(tags, userId);
-}
+  async findTasksByTags(tags: number[], userId: number): Promise<Task[]> {
+    return TasksRepository.findByTags(tags, userId);
+  }
 
   // Create a new task
   async create(taskData: { userId: number; tags?: number[] } & Partial<Task>): Promise<Omit<Task, 'user'>> {
@@ -75,7 +84,7 @@ findTasksByTags(tags: number[], userId: number): Promise<Task[]> {
   }
 
   // Delete a task
-  delete(id: number): Promise<void> {
+  async delete(id: number): Promise<void> {
     return TasksRepository.delete(id).then(() => { });
   }
 }
