@@ -41,29 +41,49 @@ class TasksController {
   }
 
   // Get all tasks by tags
-  async getAllByTags(req: Request, res: Response): Promise<void> {
+  async getAllByTagsAndStatus(req: Request, res: Response): Promise<void> {
     try {
-      const { id: userId } = (req as any).user;
-      let tags = req.query.tags;
-      if (!tags) {
-        res.status(400).json(errorResponse('Tags query parameter is required', null, 400));
-        return;
-      }
-      if (typeof tags === 'string') {
-        tags = [tags];
-      }
-      if (!Array.isArray(tags)) {
-        res.status(400).json(errorResponse('Tags query parameter must be an array', null, 400));
-        return;
-      }
-      const tagsNumber = tags.map(tag => Number(tag));
-      const tasks = await TasksService.findTasksByTags(tagsNumber, userId);
-      res.status(200).json(successResponse('Get tasks by tags successful', tasks, 200));
+        // Parse pagination parameters
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        
+        // Get userId from request
+        const { id: userId } = (req as any).user;
+
+        // Parse tags from query
+        let tags = req.query.tags;
+        if (!tags) {
+            tags = [];
+        }
+
+        // Ensure tags is an array of numbers
+        if (typeof tags === 'string') {
+            tags = [tags];
+        }
+
+        const status = req.query.status as string || '';
+        
+        if (!Array.isArray(tags)) {
+          tags = [];
+        }
+        const tagsNumber = tags.map(tag => Number(tag)).filter(tag => !isNaN(tag));
+        
+            // Call the service to find tasks by tags, status, and pagination
+        const { tasks, totalTasks } = await TasksService.findTasksByTagsPaginated(tagsNumber, status, userId, page, limit);
+
+        // Return paginated tasks
+        res.status(200).json(successResponse('Get tasks by tags and status successful', {
+            tasks,
+            currentPage: page,
+            totalPages: Math.ceil(totalTasks / limit),
+            totalTasks
+        }, 200));
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json(errorResponse(errorMessage, null, 500));
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        res.status(500).json(errorResponse(errorMessage, null, 500));
     }
-  }
+}
+
 
   // Get a task by id
   async getOne(req: Request, res: Response): Promise<void> {

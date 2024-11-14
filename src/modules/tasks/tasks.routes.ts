@@ -10,7 +10,7 @@ router.get('/all', TasksController.getAll);
 //get all Tasks
 router.get('/', TasksController.getUserTasks);
 //get all Tasks by tags
-router.get('/tags', TasksController.getAllByTags);
+router.get('/tags', TasksController.getAllByTagsAndStatus);
 //get Task by id
 router.get('/:id', TasksController.getOne);
 //create Task

@@ -27,12 +27,49 @@ class TasksRepository {
       where: { user: { id: userId } },
       relations: ['tags'],
       skip: offset,
-      take: limit
+      take: limit,
+      order: { createdAt: 'DESC' },
     });
   }
 
   findByTags(tags: number[], userId: number) {
     return this.repo.find({ where: { tags: { id: In(tags) }, user: { id: userId } } });
+  }
+
+  async findAndCountByTagsAndStatus(
+    tags: number[],
+    status: string,
+    userId: number,
+    offset: number,
+    limit: number
+  ): Promise<{ tasks: Task[], totalTasks: number }> {
+    // Crear el query builder para la tabla 'task'
+    const queryBuilder = this.repo.createQueryBuilder('task')
+      .leftJoinAndSelect('task.tags', 'tag')
+      .where('task.userId = :userId', { userId });
+  
+    // Condiciones para los filtros
+    if (tags.length > 0 && status) {
+      // Si hay tags y status
+      queryBuilder
+        .andWhere('tag.id IN (:...tags)', { tags })
+        .andWhere('task.status = :status', { status });
+    } else if (tags.length > 0) {
+      // Si solo hay tags
+      queryBuilder.andWhere('tag.id IN (:...tags)', { tags });
+    } else if (status) {
+      // Si solo hay status
+      queryBuilder.andWhere('task.status = :status', { status });
+    }
+  
+    // Ejecutar el query con paginación y ordenar por fecha de creación
+    const [tasks, totalTasks] = await queryBuilder
+      .skip(offset)
+      .take(limit)
+      .orderBy('task.createdAt', 'DESC')
+      .getManyAndCount();
+  
+    return { tasks, totalTasks };
   }
 
   create(taskData: Partial<Task>) {

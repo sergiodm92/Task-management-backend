@@ -18,7 +18,7 @@ class TasksService {
   // Find all tasks by user
   async findTasksByUser(userId: number): Promise<Task[]> {
     const tasks = await TasksRepository.findByUserId(userId);
-    return tasks.sort((a: Task, b: Task) => b.createdAt.getTime() - a.createdAt.getTime());
+    return tasks
   }
 
   async findTasksByUserPaginated(userId: number, page: number, limit: number): Promise<{ tasks: Task[], totalTasks: number }> {
@@ -35,9 +35,14 @@ class TasksService {
   }
 
   // Find all tasks by tags
-  findTasksByTags(tags: number[], userId: number): Promise<Task[]> {
-    return TasksRepository.findByTags(tags, userId);
-  }
+  async findTasksByTagsPaginated(tags: number[], status: string, userId: number, page: number, limit: number): Promise<{ tasks: Task[], totalTasks: number }> {
+    const offset = (page - 1) * limit;
+    return TasksRepository.findAndCountByTagsAndStatus(tags, status, userId, offset, limit);
+}
+
+findTasksByTags(tags: number[], userId: number): Promise<Task[]> {
+  return TasksRepository.findByTags(tags, userId);
+}
 
   // Create a new task
   async create(taskData: { userId: number; tags?: number[] } & Partial<Task>): Promise<Omit<Task, 'user'>> {
