@@ -17,20 +17,23 @@ class TagsController {
     // Get all tags by user
     async getAllByUser(req: Request, res: Response): Promise<void> {
         try {
-            const { id: userId } = (req as any).user;
-            const tags = await TagsService.findByUserId(userId);
-
-            if (!tags) {
-                res.status(404).json(errorResponse('User not found', null, 404));
-                return;
-            }
-
-            res.status(200).json(successResponse('Get all tags by user successfully', tags, 200));
+          // Obtener el `userId` del objeto `user` del request
+          const { id: userId } = (req as any).user; // Cambiar `any` por un tipo personalizado en caso de que sea posible
+    
+          const tags = await TagsService.findByUserId(userId);
+    
+          if (tags.length === 0) {
+            // Cambia a `tags.length === 0` para verificar si el usuario no tiene etiquetas
+            res.status(404).json(errorResponse('No tags found for this user', null, 404));
+            return;
+          }
+    
+          res.status(200).json(successResponse('Get all tags by user successfully', tags, 200));
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            res.status(500).json(errorResponse(errorMessage, null, 500));
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          res.status(500).json(errorResponse(errorMessage, null, 500));
         }
-    }
+      }
     // Get a tag by id
     async getOne(req: Request, res: Response): Promise<void> {
         try {

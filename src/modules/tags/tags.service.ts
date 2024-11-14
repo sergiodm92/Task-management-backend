@@ -26,15 +26,19 @@ class TagsService {
   async create(tagData: { userId: number } & CreateTagDTO): Promise<Tag> {
     const { userId, ...tagDataWithoutRelations } = tagData;
 
+    // Verificar si el usuario existe
     const user = await authRepository.findById(userId);
     if (!user) throw new Error('User not found');
 
-    const existTag = await TagsRepository.findByName(tagData.name);
-    if (existTag) throw new Error('Tag already exists');
-
+    // Verificar si la etiqueta ya existe para el usuario
+    const existTag = await TagsRepository.findByName(tagData.name, userId);
+    
+    if (existTag) {
+      throw new Error('Tag already exists');
+    }
+    // Crear la etiqueta con la relación de usuario
     const tagWithRelations = { ...tagDataWithoutRelations, user };
     return TagsRepository.create(tagWithRelations);
-
   }
 
   // Update a tag
@@ -48,16 +52,15 @@ class TagsService {
 
   // Delete a tag
   async delete(id: number, userId: number): Promise<void> {
-    console.log(id, userId);
 
     const response = await tasksService.findTasksByTags([id], userId);
     if (response.length > 0) {
-        // Lanza un error específico si la etiqueta tiene tareas asociadas
-        throw new TagHasAssociatedTasksError('The tag has associated tasks');
+      // Lanza un error específico si la etiqueta tiene tareas asociadas
+      throw new TagHasAssociatedTasksError('The tag has associated tasks');
     }
 
     await TagsRepository.delete(id);
-}
+  }
 }
 
 export default new TagsService();

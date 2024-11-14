@@ -13,8 +13,8 @@ class TagsRepository {
     return this.repo.find();
   }
 
-  findByName(name: string) {
-    return this.repo.findOneBy({ name });
+  async findByName(name: string, userId: number): Promise<Tag | null> {
+    return this.repo.findOne({ where: { name, user: { id: userId } } });
   }
 
   findById(id: number) {
