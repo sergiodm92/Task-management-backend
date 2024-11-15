@@ -24,22 +24,19 @@ class TagsService {
 
   // Create a new tag
   async create(tagData: { userId: number } & CreateTagDTO): Promise<Tag> {
-    const { userId, ...tagDataWithoutRelations } = tagData;
+  const { userId, ...tagDataWithoutRelations } = tagData;
 
-    // Verificar si el usuario existe
-    const user = await authRepository.findById(userId);
-    if (!user) throw new Error('User not found');
+  const user = await authRepository.findById(userId);
+  if (!user) throw new Error('User not found');
 
-    // Verificar si la etiqueta ya existe para el usuario
-    const existTag = await TagsRepository.findByName(tagData.name, userId);
-    
-    if (existTag) {
-      throw new Error('Tag already exists');
-    }
-    // Crear la etiqueta con la relación de usuario
-    const tagWithRelations = { ...tagDataWithoutRelations, user };
-    return TagsRepository.create(tagWithRelations);
+  const existTag = await TagsRepository.findByName(tagData.name, userId);
+  if (existTag) {
+    throw new Error('Tag already exists');
   }
+
+  const tagWithRelations = { ...tagDataWithoutRelations, user };
+  return TagsRepository.create(tagWithRelations);
+}
 
   // Update a tag
   async update(id: number, tagData: Partial<Tag>): Promise<Tag | null> {

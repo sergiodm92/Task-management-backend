@@ -14,10 +14,9 @@ export class Tag {
   @Column()
   color: string
 
-  @ManyToOne(() => User, (user) => user.tags, { onDelete: 'CASCADE' })
-  user: User;
-
   @ManyToMany(() => Task, (task) => task.tags, { nullable: true })
   tasks?: Task[];
 
+  @ManyToOne(() => User, (user) => user.tags, { onDelete: 'CASCADE' })
+  user: User;
 }
