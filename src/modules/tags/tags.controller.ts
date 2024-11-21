@@ -17,13 +17,11 @@ class TagsController {
     // Get all tags by user
     async getAllByUser(req: Request, res: Response): Promise<void> {
         try {
-          // Obtener el `userId` del objeto `user` del request
-          const { id: userId } = (req as any).user; // Cambiar `any` por un tipo personalizado en caso de que sea posible
+          const { id: userId } = (req as any).user; 
     
           const tags = await TagsService.findByUserId(userId);
     
           if (tags.length === 0) {
-            // Cambia a `tags.length === 0` para verificar si el usuario no tiene etiquetas
             res.status(404).json(errorResponse('No tags found for this user', null, 404));
             return;
           }
