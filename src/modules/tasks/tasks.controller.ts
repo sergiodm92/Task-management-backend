@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import TasksService from './tasks.service';
 import { successResponse, errorResponse } from '@utils/responseTemplates';
 
@@ -7,11 +7,11 @@ class TasksController {
   // Get all tasks
   async getAll(req: Request, res: Response): Promise<void> {
     const tasks = await TasksService.findAll();
-    res.status(200).json(successResponse('Get all tasks successful', tasks, 200));
+    successResponse(res, 'Get all tasks successful', tasks, 200);
   }
 
   // Get all tasks by user
-  async getUserTasks(req: Request, res: Response): Promise<void> {
+  async getUserTasks(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id: userId } = (req as any).user;
 
@@ -23,21 +23,16 @@ class TasksController {
       const { tasks, totalTasks, taskCountsByState } = await TasksService.findTasksByUserPaginated(userId, page, limit);
 
       // Return the paginated tasks and pagination information
-      res.status(200).json(successResponse('Get user tasks successful', {
-        tasks,
-        currentPage: page,
-        totalPages: Math.ceil(totalTasks / limit),
-        totalTasks,
-        taskCountsByState
-      }, 200));
+      successResponse(res, 'Get user tasks successful', {
+        tasks, currentPage: page, totalPages: Math.ceil(totalTasks / limit), totalTasks, taskCountsByState
+      }, 200);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json(errorResponse(errorMessage, null, 500));
-    }
-  }
+      next(error);
+    };
+  };
 
   // Get all tasks by tags
-  async getAllByTagsAndStatus(req: Request, res: Response): Promise<void> {
+  async getAllByTagsAndStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       // Parse pagination parameters
       const page = parseInt(req.query.page as string) || 1;
@@ -50,12 +45,12 @@ class TasksController {
       let tags = req.query.tags;
       if (!tags) {
         tags = [];
-      }
+      };
 
       // Ensure tags is an array of numbers
       if (typeof tags === 'string') {
         tags = [tags];
-      }
+      };
 
       const status = req.query.status as string || '';
 
@@ -68,43 +63,54 @@ class TasksController {
       const { tasks, totalTasks } = await TasksService.findTasksByTagsPaginated(tagsNumber, status, userId, page, limit);
 
       // Return paginated tasks
-      res.status(200).json(successResponse('Get tasks by tags and status successful', {
-        tasks,
-        currentPage: page,
-        totalPages: Math.ceil(totalTasks / limit),
-        totalTasks
-      }, 200));
+      successResponse(res, 'Get tasks by tags and status successful', {
+        tasks, currentPage: page, totalPages: Math.ceil(totalTasks / limit), totalTasks
+      }, 200);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json(errorResponse(errorMessage, null, 500));
-    }
-  }
+      next(error);
+    };
+  };
 
   // Get a task by id
-  async getOne(req: Request, res: Response): Promise<void> {
-    const task = await TasksService.findById(Number(req.params.id));
-    res.status(200).json(successResponse('Get task successful', task, 200));
-  }
+  async getOne(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const task = await TasksService.findById(Number(req.params.id));
+      successResponse(res, 'Get task successful', task, 200);
+    } catch (error) {
+      next(error);
+    };
+  };
 
   // Create a new task
-  async create(req: Request, res: Response): Promise<void> {
-    const { id: userId } = (req as any).user;
-    const task = await TasksService.create({ ...req.body, userId });
-    res.status(201).json(successResponse('Task created successfully', task, 201));
-  }
+  async create(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id: userId } = (req as any).user;
+      const task = await TasksService.create({ ...req.body, userId });
+      successResponse(res, 'Task created successfully', task, 201);
+    } catch (error) {
+      next(error);
+    };
+  };
 
   // Update a task
-  async update(req: Request, res: Response): Promise<void> {
-    const task = await TasksService.update(Number(req.params.id), req.body);
-    res.status(200).json(successResponse('Task updated successfully', task, 200));
-  }
+  async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const task = await TasksService.update(Number(req.params.id), req.body);
+      successResponse(res, 'Task updated successfully', task, 200);
+    } catch (error) {
+      next(error);
+    };
+  };
 
   // Delete a task
-  async delete(req: Request, res: Response): Promise<void> {
-    await TasksService.delete(Number(req.params.id));
-    res.status(204).json(successResponse('Task deleted successfully', null, 204));
-  }
-
-}
+  async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      await TasksService.delete(Number(req.params.id));
+      successResponse(res, 'Task deleted successfully', null, 204);
+    } catch (error) {
+      next(error);
+    };
+  };
+};
 
 export default new TasksController();

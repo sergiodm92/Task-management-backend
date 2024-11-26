@@ -6,6 +6,7 @@ module.exports = {
     '^@modules/(.*)$': '<rootDir>/src/modules/$1',
     '^@middleware/(.*)$': '<rootDir>/src/middleware/$1',
     '^@utils/(.*)$': '<rootDir>/src/utils/$1',
+    '^@enums/(.*)$': '<rootDir>/src/enums/$1',
   },
   moduleFileExtensions: ['ts', 'js'],
   setupFilesAfterEnv: ['<rootDir>/src/utils/setupTest.ts'],

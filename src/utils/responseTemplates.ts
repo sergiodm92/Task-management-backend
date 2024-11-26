@@ -1,22 +1,16 @@
-export function successResponse(message: string, data: any = null, statusCode: number = 200) {
-  return {
+export function successResponse(res: any, message: string, data: any = null, statusCode: number = 200) {
+  res.status(statusCode).json({
     status: "success",
     statusCode,
     message,
     data,
-  };
+  });
 }
 
-export function errorResponse(message: string, error: any = null, statusCode: number = 400) {
-  const response: { status: string; message: string; error?: any; statusCode: number } = {
+export function errorResponse(res: any, statusCode: number = 400, message: string) {
+  res.status(statusCode).json({
     status: "error",
     statusCode,
-    message,
-  };
-
-  if (error) {
-    response.error = error;
-  }
-
-  return response;
+    message
+  });
 }

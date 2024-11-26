@@ -2,11 +2,11 @@ import { IsString, IsNotEmpty, IsOptional, IsIn, IsDateString, IsArray } from 'c
 
 export class CreateTaskDTO {
   @IsString()
-  @IsNotEmpty({ message: 'title is required'})
+  @IsNotEmpty({ message: 'title is required' })
   title: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty({ message: 'description is required' })
   description: string;
 
   @IsString()

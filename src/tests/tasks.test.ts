@@ -25,7 +25,7 @@ describe('Tests for Tasks endpoints', () => {
       .send({});
 
     expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty('errors', ["title is required", "title must be a string"]);
+    expect(res.body).toHaveProperty('message', "title is required, title must be a string");
   });
   it('Must fail if the title is not a string', async () => {
     const res = await request(app)
@@ -36,7 +36,7 @@ describe('Tests for Tasks endpoints', () => {
       });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty('errors', ["title must be a string"]);
+    expect(res.body).toHaveProperty('message', "title must be a string");
   });
   it('Must fail if the dueDate is not a dateString', async () => {
     const res = await request(app)
@@ -48,7 +48,7 @@ describe('Tests for Tasks endpoints', () => {
       });
 
     expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty('errors', ["dueDate must be a valid ISO 8601 date string"]);
+    expect(res.body).toHaveProperty('message', "dueDate must be a valid ISO 8601 date string");
   });
 
   //CRUD tests

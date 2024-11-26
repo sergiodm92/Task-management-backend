@@ -4,6 +4,7 @@ import authRepository from '@modules/auth/auth.repository';
 import { CreateTagDTO } from './dtos';
 import tasksService from '@modules/tasks/tasks.service';
 import createError from 'http-errors';
+import { errorMessage } from '@enums/errors.enum';
 
 class TagsService {
   // Find all tags
@@ -26,11 +27,11 @@ class TagsService {
     const { userId, ...tagDataWithoutRelations } = tagData;
 
     const user = await authRepository.findById(userId);
-    if (!user) throw new createError.NotFound('User not found');
+    if (!user) throw new createError.NotFound(errorMessage.userNotFound);
 
     const existTag = await TagsRepository.findByName(tagData.name, userId);
     if (existTag) {
-      throw new createError.Conflict('Tag already exists');
+      throw new createError.Conflict(errorMessage.tagAlreadyExists);
     }
 
     const tagWithRelations = { ...tagDataWithoutRelations, user };
@@ -40,7 +41,7 @@ class TagsService {
   // Update a tag
   async update(id: number, tagData: Partial<Tag>): Promise<Tag | null> {
     const tag = await TagsRepository.findById(id);
-    if (!tag) throw new createError.NotFound('Tag not found');
+    if (!tag) throw new createError.NotFound(errorMessage.tagNotFound);
 
     await TagsRepository.update(id, tagData);
     return this.findById(id);
@@ -50,7 +51,7 @@ class TagsService {
   async delete(id: number, userId: number): Promise<void> {
     const response = await tasksService.findTasksByTags([id], userId);
     if (response.length > 0) {
-      throw new createError.MethodNotAllowed('The tag has associated tasks');
+      throw new createError.MethodNotAllowed(errorMessage.tagHasAssociatedTask);
     }
 
     await TagsRepository.delete(id);

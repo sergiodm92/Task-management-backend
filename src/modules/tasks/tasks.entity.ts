@@ -19,7 +19,7 @@ export class Task {
   @Column()
   title: string;
 
-  @Column({ nullable: true })
+  @Column()
   description: string;
 
   @Column({ type: 'date', nullable: true })

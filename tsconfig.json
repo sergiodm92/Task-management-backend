@@ -15,7 +15,8 @@
       "@modules/*": ["modules/*"],
       "@middleware/*": ["middleware/*"],
       "@types/*": ["types/*"],
-      "@utils/*": ["utils/*"] 
+      "@utils/*": ["utils/*"],
+      "@enums/*": ["enums/*"]
     }
   },
   "include": ["src/**/*"],
