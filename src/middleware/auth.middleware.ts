@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
+import createError from 'http-errors';
 
 interface AuthenticatedRequest extends Request {
   user?: string | JwtPayload;
@@ -10,8 +11,7 @@ const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunc
   const token = req.headers.authorization?.split(' ')[1];
 
   if (!token) {
-    res.status(401).json({ message: 'No token provided' });
-    return;
+    throw new createError.Unauthorized('No token provided');
   }
 
   try {
@@ -21,12 +21,11 @@ const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunc
   } catch (error) {
     if (error instanceof TokenExpiredError) {
       // Response specific when the token has expired
-      res.status(403).json({ message: 'Token has expired' });
+      throw new createError.Unauthorized('Token has expired');
     } else {
       // Response for an invalid token
-      res.status(401).json({ message: 'Invalid token' });
+      throw new createError.Unauthorized('Invalid token');
     }
-    return;
   }
 };
 

@@ -124,15 +124,7 @@ Configura TypeORM en `src/config/database.ts` para conectarse a la base de datos
 
 Para cambiar el motor de base de datos (por ejemplo, a PostgreSQL en producción), ajusta `DATABASE_TYPE` y otros valores en `.env` sin modificar el código principal.
 
-### 5. Ejecutar Migraciones
-
-Ejecuta el siguiente comando para crear las tablas en la base de datos:
-
-```bash
-npm run typeorm migration:run
-```
-
-### 6. Iniciar el Servidor
+### 5. Iniciar el Servidor
 
 Para iniciar el servidor en modo desarrollo:
 

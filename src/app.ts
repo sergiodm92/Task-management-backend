@@ -5,6 +5,7 @@ import routes from './routes';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import errorHandler from '@middleware/errors.middleware';
 
 const app: Application = express();
 
@@ -14,7 +15,7 @@ app.use(helmet());
 // CORS configuration
 app.use(cors());
 // Limit requests to 100 per IP in 15 minutes.
-// app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 // Globals middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,10 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', routes);
 
 // Error handling
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'An error occurred on the server' });
-});
+app.use(errorHandler);
 
 // Connection to the database
 AppDataSource.initialize()

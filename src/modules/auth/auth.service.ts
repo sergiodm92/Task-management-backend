@@ -1,49 +1,45 @@
+import createError from 'http-errors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import AuthRepository from './auth.repository';
 import envs from '@config/envs';
 
 class AuthService {
-  // Method to register a new user
   async register(email: string, password: string) {
-
     const existingUser = await AuthRepository.findUserByEmail(email);
     if (existingUser) {
-      throw new Error('Email already exists');
+      // Used http-errors to throw a 400 (Bad Request) error
+      throw new createError.BadRequest('Email already exists');
     }
-
-    // Hash the password before saving it in the database
     const hashedPassword = await bcrypt.hash(password, 10);
-    return await AuthRepository.createUser(email, hashedPassword);
+    const newUser = await AuthRepository.createUser(email, hashedPassword);
+    const { password: userPassword, ...userWidthoutPassword } = newUser
+    return userWidthoutPassword
   }
 
-  // Method to login and get a JWT token
   async login(email: string, password: string) {
-
+    
     const user = await AuthRepository.findUserByEmail(email);
-    if (!user) {
-      throw new Error('Invalid credentials');
+    
+    const isPasswordValid = user && await bcrypt.compare(password, user.password);
+
+    if (!user || !isPasswordValid) {
+      throw new createError.Unauthorized('Invalid credentials'); 
     }
-    // Validate the password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new Error('Invalid credentials');
-    }
-    // Generate a JWT token
     const token = jwt.sign({ id: user.id, email: user.email }, envs.JWT_SECRET, {
       expiresIn: envs.JWT_EXPIRES_IN,
     });
 
-    const userResponse = {
-      id: user.id,
-      email: user.email,
-    };
-
-    return { token, user:userResponse };
+    return { token, user: { id: user.id, email: user.email } };
   }
 
   async getUser(id: number) {
-    return await AuthRepository.findById(id);
+    const user = await AuthRepository.findById(id);
+    if (!user) {
+      // Used http-errors to throw a 404 (Not Found) error
+      throw new createError.NotFound('User not found');
+    }
+    return user;
   }
 }
 

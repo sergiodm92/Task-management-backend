@@ -6,8 +6,6 @@ export enum TaskStatus {
     Pending = 'pending',
 }
 
-
-
 interface Tag {
     id: number;
     name: string;

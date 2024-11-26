@@ -2,7 +2,6 @@ import User from '@modules/auth/auth.entity';
 import { Task } from '@modules/tasks/tasks.entity';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany } from 'typeorm';
 
-
 @Entity()
 export class Tag {
   @PrimaryGeneratedColumn()
