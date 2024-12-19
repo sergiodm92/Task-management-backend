@@ -11,6 +11,9 @@ const app: Application = express();
 
 // Security configuration
 
+// Trust proxy setting to handle X-Forwarded-For header correctly
+app.set('trust proxy', 1); // Enable trust proxy
+
 app.use(helmet());
 // CORS configuration
 app.use(cors());
